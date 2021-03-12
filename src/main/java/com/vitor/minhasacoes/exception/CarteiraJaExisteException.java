@@ -1,0 +1,14 @@
+package com.vitor.minhasacoes.exception;
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class CarteiraJaExisteException extends Exception{
+
+    public CarteiraJaExisteException(String nome){
+        super(String.format("Carteira %s com esse nome ja cadastrada",nome));
+    }
+
+}
