@@ -40,9 +40,7 @@ public class CarteiraService {
     public StockDTO addStock(StockDTO stockDTO) throws CarteiraNaoEncontradaException {
         Optional<Carteira> carteira = carteiraRepository.findById(stockDTO.getCarteiraId());
         if(carteira.isPresent()){
-            Stock stock = new Stock();
-            stock.setTicker(stockDTO.getTicker());
-            stock.setCarteira(carteira.get());
+            Stock stock = stockMapper.toModel(stockDTO);
             Stock stockSalvo = stockRepository.save(stock);
             return stockMapper.toDTO(stockSalvo);
         }

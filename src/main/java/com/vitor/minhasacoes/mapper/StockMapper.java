@@ -14,6 +14,7 @@ import org.mapstruct.factory.Mappers;
 public interface StockMapper {
     StockMapper INSTANCE = Mappers.getMapper(StockMapper.class);
 
+    @Mapping(source = "carteiraId", target = "carteira.id")
     Stock toModel(StockDTO stockDTO);
 
     @Mapping(source = "carteira.id", target = "carteiraId")

@@ -1,15 +1,20 @@
 package com.vitor.minhasacoes.service;
 
 import com.vitor.minhasacoes.builder.CarteiraDTOBuilder;
+import com.vitor.minhasacoes.builder.StockDTOBuilder;
 import com.vitor.minhasacoes.dto.CarteiraDTO;
+import com.vitor.minhasacoes.dto.StockDTO;
 import com.vitor.minhasacoes.entity.Carteira;
+import com.vitor.minhasacoes.entity.Stock;
 import com.vitor.minhasacoes.exception.CarteiraJaExisteException;
 import com.vitor.minhasacoes.exception.CarteiraNaoEncontradaException;
 import com.vitor.minhasacoes.mapper.CarteiraMapper;
+import com.vitor.minhasacoes.mapper.StockMapper;
 import com.vitor.minhasacoes.repository.CarteiraRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.vitor.minhasacoes.repository.StockRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,10 +36,15 @@ public class CarteiraServiceTest {
     @Mock
     private CarteiraRepository carteiraRepository;
 
+    @Mock
+    private StockRepository stockRepository;
+
     private CarteiraMapper carteiraMapper = CarteiraMapper.INSTANCE;
+    private StockMapper stockMapper = StockMapper.INSTANCE;
 
     @InjectMocks
     private CarteiraService carteiraService;
+
 
     @Test
     void whenCarteiraInformedItShouldBeCreated() throws CarteiraJaExisteException {
@@ -50,6 +60,24 @@ public class CarteiraServiceTest {
     }
 
     @Test
+    void whenStockInformedItShouldBeCreated() throws CarteiraNaoEncontradaException {
+        CarteiraDTO carteiraDTO = CarteiraDTOBuilder.builder().build().toCarteiraDTO();
+        Carteira expectedCarteira = carteiraMapper.toModel(carteiraDTO);
+
+        StockDTO stockDto = StockDTOBuilder.builder().build().toStockDTO();
+        Stock expectedStock = stockMapper.toModel(stockDto);
+
+        when(carteiraRepository.findById(carteiraDTO.getId())).thenReturn(Optional.of(expectedCarteira));
+        when(stockRepository.save(expectedStock)).thenReturn(expectedStock);
+
+        StockDTO stockSalvoDTO = carteiraService.addStock(stockDto);
+
+        assertThat(stockDto.getId(),is(equalTo(stockSalvoDTO.getId())));
+        assertThat(stockDto.getTicker(), is(equalTo(stockSalvoDTO.getTicker())));
+        assertThat(stockDto.getCarteiraId(), is(equalTo(stockSalvoDTO.getCarteiraId())));
+    }
+
+    @Test
     void whenCarteiraAlreadyCreatedExceptionShouldBeThrown(){
         CarteiraDTO carteiraDTO = CarteiraDTOBuilder.builder().build().toCarteiraDTO();
         Carteira duplicatedCarteira = carteiraMapper.toModel(carteiraDTO);
@@ -60,7 +88,7 @@ public class CarteiraServiceTest {
     }
 
     @Test
-    void whenValidCarteiraNameIsGivenThenReturnABeer() throws CarteiraNaoEncontradaException {
+    void whenValidCarteiraNameIsGivenThenReturnACarteira() throws CarteiraNaoEncontradaException {
         CarteiraDTO carteiraDTO = CarteiraDTOBuilder.builder().build().toCarteiraDTO();
         Carteira carteiraExpected = carteiraMapper.toModel(carteiraDTO);
 

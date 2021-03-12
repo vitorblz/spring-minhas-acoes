@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class CarteiraDTOBuilder {
     @Builder.Default
-    private  Long id = 1l;
+    private  Long id = 1L;
 
     @Builder.Default
     private String nome =  "Principal";
